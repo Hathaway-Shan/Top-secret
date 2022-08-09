@@ -26,6 +26,7 @@ const registerAndLogin = async (userProps = {}) => {
   await agent.post('/api/v1/users/session').send({ email, password });
   return [agent, user];
 };
+console.log('this stops error', registerAndLogin);
 
 describe('backend-express-template routes', () => {
   beforeEach(() => {
