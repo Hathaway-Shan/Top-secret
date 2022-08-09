@@ -33,9 +33,7 @@ describe('backend-express-template routes', () => {
     return setup(pool);
   });
   it('creates a new user', async () => {
-    const res = await (
-      await request(app).post('/api/v1/users')
-    ).setEncoding(testUser);
+    const res = await request(app).post('/api/v1/users').send(testUser);
     const { firstName, lastName, email } = testUser;
 
     expect(res.body).toEqual({
