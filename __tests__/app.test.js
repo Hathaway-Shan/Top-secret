@@ -50,6 +50,11 @@ describe('backend-express-template routes', () => {
 
     expect(res.status).toBe(200);
   });
+  it.only('delete /sessions deletes the user session', async () => {
+    const [agent] = await registerAndLogin();
+    const res = await agent.delete('/api/v1/users/sessions');
+    expect(res.status).toBe(204);
+  });
   afterAll(() => {
     pool.end();
   });
