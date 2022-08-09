@@ -3,6 +3,7 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 const UserService = require('../lib/services/userService');
+const { response } = require('../lib/app');
 
 //Dummy user for testing
 const testUser = {
@@ -55,10 +56,17 @@ describe('backend-express-template routes', () => {
     const res = await agent.delete('/api/v1/users/sessions');
     expect(res.status).toBe(204);
   });
-  it.only('/users should return 200 if user is admin', async () => {
-    const [agent] = await registerAndLogin({ email: 'admin' });
-    const res = await agent.get('/api/v1/users');
-    expect(res.status).toEqual(200);
+  it('/ secrets should return a list of secrets if user authenicated', async () => {
+    const [agent] = await registerAndLogin();
+    const res = await agent.get('/api/v1/secrets');
+    expect(res.status).toBe(200);
+    expect(res.body.length).toEqual(3);
+    expect(res.body[0]).toEqual({
+      id: expect.any(String),
+      title: expect.any(String),
+      description: expect.any(String),
+      created_at: expect.any(String),
+    });
   });
   afterAll(() => {
     pool.end();
