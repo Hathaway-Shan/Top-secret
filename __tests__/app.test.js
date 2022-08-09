@@ -50,10 +50,15 @@ describe('backend-express-template routes', () => {
 
     expect(res.status).toBe(200);
   });
-  it.only('delete /sessions deletes the user session', async () => {
+  it('delete /sessions deletes the user session', async () => {
     const [agent] = await registerAndLogin();
     const res = await agent.delete('/api/v1/users/sessions');
     expect(res.status).toBe(204);
+  });
+  it.only('/users should return 200 is user is admin', async () => {
+    const [agent] = await registerAndLogin({ email: 'admin' });
+    const res = await agent.get('/api/v1/users');
+    expect(res.status).toEqual(200);
   });
   afterAll(() => {
     pool.end();
