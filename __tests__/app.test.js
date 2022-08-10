@@ -3,7 +3,6 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 const UserService = require('../lib/services/userService');
-// const { response } = require('../lib/app');
 
 //Dummy user for testing
 const testUser = {
@@ -68,6 +67,13 @@ describe('backend-express-template routes', () => {
       title: expect.any(String),
       description: expect.any(String),
       created_at: expect.any(String),
+    });
+  });
+  it('/secrets rejects unauthenticated user', async () => {
+    const res = await request(app).post('/api/v1/secrets');
+    expect(res.body).toEqual({
+      message: 'You must be signed in to continue',
+      status: 401,
     });
   });
   it('delete /sessions deletes the user session', async () => {
