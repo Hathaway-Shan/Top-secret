@@ -70,7 +70,7 @@ describe('backend-express-template routes', () => {
     });
   });
   it('/secrets rejects unauthenticated user', async () => {
-    const res = await request(app).post('/api/v1/secrets');
+    const res = await request(app).get('/api/v1/secrets');
     expect(res.body).toEqual({
       message: 'You must be signed in to continue',
       status: 401,
