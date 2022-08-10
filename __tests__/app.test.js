@@ -24,7 +24,7 @@ const registerAndLogin = async (userProps = {}) => {
 
   //finally sign in
   const { email } = user;
-  await agent.post('/api/v1/users/session').send({ email, password });
+  await agent.post('/api/v1/users/sessions').send({ email, password });
   return [agent, user];
 };
 
@@ -51,24 +51,38 @@ describe('backend-express-template routes', () => {
 
     expect(res.status).toBe(200);
   });
+  it('/secrets should return a list of secrets if user authenticated', async () => {
+    //a less abstracted register and login function registers and signs in user
+    const agent = request.agent(app);
+    await agent.post('/api/v1/users').send(testUser);
+    const { email, password } = testUser;
+    await agent.post('/api/v1/users/sessions').send({ email, password });
+
+    const res = await agent.get('/api/v1/secrets');
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toEqual(3);
+
+    expect(res.body[0]).toEqual({
+      id: expect.any(String),
+      title: expect.any(String),
+      description: expect.any(String),
+      created_at: expect.any(String),
+    });
+  });
   it('delete /sessions deletes the user session', async () => {
     const [agent] = await registerAndLogin();
-    const res = await agent.delete('/api/v1/users/sessions');
+    //test to see if user is singed in
+    let res = await request(app)
+      .post('/api/v1/users/sessions')
+      .send({ email: 'test@example.com', password: '123456' });
+
+    expect(res.status).toBe(200);
+
+    res = await agent.delete('/api/v1/users/sessions');
     expect(res.status).toBe(204);
   });
-  it.only('/secrets should return a list of secrets if user authenticated', async () => {
-    const [agent] = await registerAndLogin();
-    const response = await agent.get('/api/v1/secrets');
-    expect(response.status).toBe(200);
-    expect(response.body.length).toEqual(3);
 
-    // expect(res.body[0]).toEqual({
-    //   id: expect.any(String),
-    //   title: expect.any(String),
-    //   description: expect.any(String),
-    //   created_at: expect.any(String),
-    // });
-  });
   afterAll(() => {
     pool.end();
   });
